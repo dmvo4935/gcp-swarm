@@ -27,7 +27,7 @@ pipeline {
 		stage('Ansible: configure management node') {
 			steps {
                       dir('ansible'){
-                      sh 'ansible-playbook -i ./terraform_inventory.sh --private-key ../id_rsa install_ansible.yml' 
+                      sh 'ansible-playbook -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible.yml' 
                     }
                    }
 		}
@@ -40,7 +40,7 @@ pipeline {
                            def host = "terraform output | grep node | sed 's/^.*= //'".execute().text
                            }
                          
-                         sh 'ssh -i id_rsa ${user}@${host} ansible-playbook -i ./terraform_inventory.sh --private-key id_rsa main.yml'
+                         sh 'ssh -i id_rsa ${user}@${host} ansible-playbook -i ./terraform_inventory.sh main.yml'
                          } 
 			}
 		}
