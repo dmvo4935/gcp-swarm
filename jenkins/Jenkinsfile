@@ -1,0 +1,49 @@
+#!/usr/bin/env groovy
+
+import groovy.json.JsonSlurperClassic
+
+def jsonParse(def json) {
+    new groovy.json.JsonSlurperClassic().parseText(json)
+ }   
+
+pipeline {
+	agent any
+
+	stages {
+
+		stage('Terraform: deployment') {
+
+			steps {
+                         ${env.VAULT_TOKEN}='efe7656e-5c56-bf4f-9bd9-8910d6511b71' 
+                         ansiColor('xterm') {
+                         dir('terraform'){
+                           sh 'terraform init'
+                           sh 'terraform apply --auto-approve'
+                          } 
+                         }          
+		}
+		}
+
+		stage('Ansible: configure management node') {
+			steps {
+                      dir('ansible'){
+                      sh 'ansible-playbook -i ./terraform_inventory.sh --private-key ../id_rsa install_ansible.yml' 
+                    }
+                   }
+		}
+
+		stage('Ansible: configure swarm master') {
+			steps {
+                         dir ('terraform'){
+                          script {
+                           def user = "terraform output | grep user | sed 's/^.*= //'".execute().text
+                           def host = "terraform output | grep node | sed 's/^.*= //'".execute().text
+                           }
+                         
+                         sh 'ssh -i id_rsa ${user}@${host} ansible-playbook -i ./terraform_inventory.sh --private-key id_rsa main.yml'
+                         } 
+			}
+		}
+	}
+
+}
