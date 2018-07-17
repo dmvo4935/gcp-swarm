@@ -14,8 +14,8 @@ pipeline {
 		stage('Terraform: deployment') {
 
 			steps {
-                         ${env.VAULT_TOKEN}='efe7656e-5c56-bf4f-9bd9-8910d6511b71' 
-                         ansiColor('xterm') {
+                         sh 'export VAULT_TOKEN=efe7656e-5c56-bf4f-9bd9-8910d6511b71'
+                       ansiColor('xterm') {
                          dir('terraform'){
                            sh 'terraform init'
                            sh 'terraform apply --auto-approve'
