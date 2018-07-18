@@ -25,6 +25,7 @@
        with_items:
         - python2-pip
         - sshpass
+        - rsync
     when: ansible_os_family == 'Redhat'
     become: yes
 
@@ -36,6 +37,7 @@
       - python-apt
       - sshpass
       - python-pip
+      - rsync
     when: ansible_os_family == 'Debian'
     register: result
     become: yes
