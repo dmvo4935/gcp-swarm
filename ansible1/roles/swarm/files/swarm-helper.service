@@ -1,0 +1,9 @@
+[Unit]
+Description=Swarm Helper
+DefaultDependencies=no
+After=multi-user.target
+[Service]
+Type=simple
+ExecStart=/root/swarm-helper.py
+[Install]
+WantedBy=multi-user.target

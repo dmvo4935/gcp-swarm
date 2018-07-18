@@ -19,7 +19,7 @@ pipeline {
                          dir("${WORKSPACE}/terraform"){
                            sh 'terraform init'
                            sh 'terraform apply --auto-approve'
-                           sh "terraform state pull > ${WORKSPACE}/ansible/terraform.tfstate"
+                           sh "terraform state pull > ${WORKSPACE}/ansible1/terraform.tfstate"
                           } 
                          }          
 		}
@@ -27,9 +27,9 @@ pipeline {
 
 		stage('Ansible: configure management node') {
 			steps {
-                      dir("${WORKSPACE}/ansible"){
+                      dir("${WORKSPACE}/ansible1"){
                       sh 'ls -l'
-                      sh 'ansible-playbook -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible.yml' 
+                      sh 'ansible1-playbook -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible1.yml' 
                     }
                    }
 		}
@@ -42,7 +42,7 @@ pipeline {
                            def host = "terraform output | grep node | sed 's/^.*= //'".execute().text
                            }
                          
-                         sh 'ssh -i id_rsa ${user}@${host} ansible-playbook -i ./terraform_inventory.sh main.yml'
+                         sh 'ssh -i id_rsa ${user}@${host} ansible1-playbook -i ./terraform_inventory.sh main.yml'
                          } 
 			}
 		}

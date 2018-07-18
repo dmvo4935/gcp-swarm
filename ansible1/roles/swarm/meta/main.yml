@@ -1,0 +1,2 @@
+dependencies:
+  - { role: docker, docker_opts: "{{ swarm_docker_opts }}" }

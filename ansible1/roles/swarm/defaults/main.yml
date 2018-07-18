@@ -1,0 +1,9 @@
+---
+# Type of node mgr or wworker
+swarm_type_of_node: "mgr"
+# IP address of the swarm manager
+swarm_manager_address: "{{ ansible_default_ipv4.address }}"
+# swarm manager port
+swarm_manager_port: 2377
+# set docker_opts for the docker role
+swarm_docker_opts: "-H unix:///var/run/docker.sock  -H tcp://0.0.0.0:2375 --dns 8.8.8.8 --dns 8.8.4.4"

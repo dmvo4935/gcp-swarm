@@ -1,0 +1,18 @@
+- name: Init "Swarm Mode" on the first manager.
+  shell: docker swarm init
+        --listen-addr {{ swarm_manager_address }}:{{ swarm_manager_port }}
+        --advertise-addr {{ swarm_manager_address }}
+  when: "docker_info.stdout.find('Swarm: active') == -1"
+
+- name: Install swarm helper service
+  block: 
+  - copy:
+    src: swarm-helper.service
+    dest: /etc/systemd/system/
+  - copy:
+    src: swarm-helper.py
+    dest: /root/
+  - service: 
+    name: swarm-helper
+    state: started    
+

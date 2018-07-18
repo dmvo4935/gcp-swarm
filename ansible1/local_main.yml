@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+  vars:
+   swarm_manager_address: '{{manager_address}}'
+  roles:
+  - { role: swarm, swarm_type_of_node: worker }  

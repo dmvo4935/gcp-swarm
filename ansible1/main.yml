@@ -1,0 +1,12 @@
+---
+- hosts: role=swarm_mgr
+  become: yes
+  roles:
+  - { role: swarm, swarm_type_of_node: mgr }
+
+- hosts: role=swarm_nodes
+  become: yes
+  vars:
+   swarm_manager_address: "{% for host in groups['swarm_mgr'] %}{{hostvars[host]['ansible_default_ipv4']['address']}}{% endfor %}"
+  roles:
+  - { role: swarm, swarm_type_of_node: worker }  

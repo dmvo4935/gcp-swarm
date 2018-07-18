@@ -1,0 +1,74 @@
+---
+
+- hosts: role=management_node
+  tasks:
+
+  - name: Adding "{{ansible_default_ipv4['address']}} {{ansible_hostname}} to /etc/hosts file"
+    lineinfile:
+     path: /etc/hosts
+     regexp: "^{{ansible_default_ipv4['address']}}"
+     line: "{{ansible_default_ipv4['address']}} {{ansible_hostname}}"
+     owner: root
+     group: root
+     mode: 0644
+    become: yes
+
+  - block:
+     - name: Adding EPEL repo
+       yum:
+        name: http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        state: present
+     - name: Installing Pip and SSHPass
+       yum:
+        name: '{{item}}'
+        state: present
+       with_items:
+        - python2-pip
+        - sshpass
+    when: ansible_os_family == 'Redhat'
+    become: yes
+
+  - name: Installing Pip and SSHPass
+    apt:
+     update_cache: yes
+     name: '{{item}}'
+    with_items:
+      - python-apt
+      - sshpass
+      - python-pip
+    when: ansible_os_family == 'Debian'
+    register: result
+    become: yes
+
+  - name: Copy ati-0.4.4.dev0.tar.gz
+    copy:
+     src: ati-0.4.4.dev0.tar.gz
+     dest: /tmp/ati-0.4.4.dev0.tar.gz
+
+
+  - name: Installing Python packages/modules
+    pip:
+     name: '{{item}}'
+     state: latest
+    with_items:
+     - pip
+     - ansible
+     - file:///tmp/ati-0.4.4.dev0.tar.gz
+     - pywinrm
+     - pan-python
+     - pandevice
+     - xmltodict
+    become: yes
+
+  - name: Copy ansible directory installation
+    synchronize:
+     src: ansible
+     dest: '~{{ansible_user}}/'
+     mode: 0760
+
+  - name: Changing the script so it was able to read local tfstate file
+    lineinfile:
+     path: ansible/terraform_inventory.sh
+     regexp: '^ati.*'
+     line: 'ati "$@" --root $INVENTORY_DIR --noterraform'
+
