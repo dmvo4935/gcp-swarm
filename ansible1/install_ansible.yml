@@ -62,7 +62,7 @@
 
   - name: Copy ansible directory installation
     synchronize:
-     src: ansible
+     src: ./
      dest: '~{{ansible_user}}/'
      mode: 0760
 
