@@ -68,7 +68,7 @@
 
   - name: Changing the script so it was able to read local tfstate file
     lineinfile:
-     path: ansible/terraform_inventory.sh
+     path: terraform_inventory.sh
      regexp: '^ati.*'
      line: 'ati "$@" --root $INVENTORY_DIR --noterraform'
 
