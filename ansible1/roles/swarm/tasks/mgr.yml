@@ -6,13 +6,17 @@
 
 - name: Install swarm helper service
   block: 
-  - copy:
-    src: swarm-helper.service
-    dest: /etc/systemd/system/
-  - copy:
-    src: swarm-helper.py
-    dest: /root/
-  - service: 
-    name: swarm-helper
-    state: started    
+  - name: Copy swarm-helper service unit
+    copy:
+     src: swarm-helper.service
+     dest: /etc/systemd/system/
+  - name: Copy swarm-helper script
+    copy:
+     src: swarm-helper.py
+     dest: /root/
+  - name: Enable swarm-helper service
+    service: 
+     name: swarm-helper
+     state: started
+     enabled: true   
 
