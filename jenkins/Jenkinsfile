@@ -20,16 +20,16 @@ pipeline {
                            sh 'terraform init'
                            sh 'terraform apply --auto-approve'
                            sh "terraform state pull > ${WORKSPACE}/ansible1/terraform.tfstate"
-                          } 
+                           sh 'chmod go=--- id_rsa'  
+                           } 
                          }          
-		}
+		    }
 		}
 
 		stage('Ansible: configure management node') {
 			steps {
                       dir("${WORKSPACE}/ansible1"){
-                      sh 'ls -l'
-                      sh "ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no' -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible.yml" 
+                    sh "ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no' -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible.yml" 
                     }
                    }
 		}
