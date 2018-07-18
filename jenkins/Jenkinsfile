@@ -29,7 +29,7 @@ pipeline {
 			steps {
                       dir("${WORKSPACE}/ansible1"){
                       sh 'ls -l'
-                      sh 'ansible-playbook -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible.yml' 
+                      sh "ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no' -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible.yml" 
                     }
                    }
 		}
@@ -42,7 +42,7 @@ pipeline {
                            def host = "terraform output | grep node | sed 's/^.*= //'".execute().text
                            }
                          
-                         sh 'ssh -i id_rsa ${user}@${host} ansible-playbook -i ./terraform_inventory.sh main.yml'
+                         sh 'ssh -i id_rsa ${user}@${host} ansible-playbook --ssh-common-args=\'-o StrictHostKeyChecking=no\' -i ./terraform_inventory.sh main.yml'
                          } 
 			}
 		}
