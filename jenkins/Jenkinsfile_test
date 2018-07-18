@@ -15,8 +15,10 @@ pipeline {
 
 			steps {
                         script {
-                             def tf_ver="ls /bin".execute().text
-                             println tf_ver  
+                             node {
+                             def tf_ver="/usr/bin/terraform -version".execute().text
+                             println tf_ver
+                           }
                          }   
                       }
                 }
