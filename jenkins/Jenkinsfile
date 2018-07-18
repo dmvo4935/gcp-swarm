@@ -38,8 +38,8 @@ pipeline {
 			steps {
                          dir ("${WORKSPACE}/terraform"){
                           script {
-                           def user = "/bin/terraform output | grep user | sed 's/^.*= //'".execute().text
-                           def host = "/bin/terraform output | grep node | sed 's/^.*= //'".execute().text
+                           def user = "/usr/bin/terraform output | grep user | sed 's/^.*= //'".execute().text
+                           def host = "/usr/bin/terraform output | grep node | sed 's/^.*= //'".execute().text
                            }
                          
                          sh "ssh -i id_rsa ${user}@${host} ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no' -i ./terraform_inventory.sh main.yml"
