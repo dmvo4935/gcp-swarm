@@ -57,12 +57,13 @@ resource "google_compute_firewall" "all-access-internal" {
 }
 
 resource "google_compute_route" "internal-default" {
-  name              = "internal-default"
-  dest_range        = "0.0.0.0/0"
-  network           = "${google_compute_network.my-vpc.name}"
-  next_hop_instance = "${google_compute_instance.management-instance.self_link}"
-  priority          = 100
-  tags              = ["master", "nodes"]
+  name                   = "internal-default"
+  dest_range             = "0.0.0.0/0"
+  network                = "${google_compute_network.my-vpc.name}"
+  next_hop_instance      = "${google_compute_instance.management-instance.self_link}"
+  next_hop_instance_zone = "europe-west1-b"
+  priority               = 100
+  tags                   = ["master", "nodes"]
 }
 
 resource "google_compute_firewall" "internet-access-internal" {
@@ -127,7 +128,7 @@ resource "google_compute_instance_group_manager" "docker-instances" {
   instance_template  = "${google_compute_instance_template.docker-instance.self_link}"
   update_strategy    = "NONE"
   zone               = "europe-west1-b"
-  depends_on         = ["google_compute_instance.master-instance","google_compute_instance_template.docker-instance"]
+  depends_on         = ["google_compute_instance.master-instance", "google_compute_instance_template.docker-instance"]
 
   #  target_pools = ["${google_compute_target_pool.docker-instances.self_link}"]
   target_size = 2
@@ -199,7 +200,6 @@ resource "google_compute_instance" "management-instance" {
     }
   }
 
-  #tags = ["Name:${google_compute_instance.master-instance.self_link}", "ssh_ip:${google_compute_instance.master-instance.network_interface.0.address}"]
   tags = ["management"]
 
   metadata {
