@@ -27,6 +27,7 @@ pipeline {
 		stage('Ansible: configure management node') {
 			steps {
                       dir('ansible'){
+                      sh 'ls -l'
                       sh 'ansible-playbook -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible.yml' 
                     }
                    }
