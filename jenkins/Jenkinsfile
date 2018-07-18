@@ -16,10 +16,10 @@ pipeline {
 			steps {
                          sh 'echo efe7656e-5c56-bf4f-9bd9-8910d6511b71 >/home/jenkins/.vault-token'
                        ansiColor('xterm') {
-                         dir('${WORKSPACE}/terraform'){
+                         dir("${WORKSPACE}/terraform"){
                            sh 'terraform init'
                            sh 'terraform apply --auto-approve'
-                           sh 'terraform state pull > ${WORKSPACE}/ansible/terraform.tfstate'
+                           sh "terraform state pull > ${WORKSPACE}/ansible/terraform.tfstate"
                           } 
                          }          
 		}
@@ -27,7 +27,7 @@ pipeline {
 
 		stage('Ansible: configure management node') {
 			steps {
-                      dir('${WORKSPACE}/ansible'){
+                      dir("${WORKSPACE}/ansible"){
                       sh 'ls -l'
                       sh 'ansible-playbook -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible.yml' 
                     }
@@ -36,7 +36,7 @@ pipeline {
 
 		stage('Ansible: configure swarm master') {
 			steps {
-                         dir ('${WORKSPACE}/terraform'){
+                         dir ("${WORKSPACE}/terraform"){
                           script {
                            def user = "terraform output | grep user | sed 's/^.*= //'".execute().text
                            def host = "terraform output | grep node | sed 's/^.*= //'".execute().text
