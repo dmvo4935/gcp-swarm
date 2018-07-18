@@ -37,9 +37,11 @@ pipeline {
 		stage('Ansible: configure swarm master') {
 			steps {
                          dir ("${WORKSPACE}/terraform"){
-                            user = sh returnStdout: true, script: "terraform output | grep user | sed 's/^.*= //'"
-                            host = sh returnStdout: true, script: "terraform output | grep node | sed 's/^.*= //'"
-                         
+                            script {
+                           println "find / -name terraform".execute().text
+                           def user = sh returnStdout: true, script: "terraform output | grep user | sed 's/^.*= //'"
+                           def host = sh returnStdout: true, script: "terraform output | grep node | sed 's/^.*= //'"
+                           } 
                          sh "ssh -i id_rsa ${user}@${host} ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no' -i ./terraform_inventory.sh main.yml"
                          } 
 			}
