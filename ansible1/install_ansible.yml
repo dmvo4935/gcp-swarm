@@ -64,7 +64,7 @@
     synchronize:
      src: ./
      dest: '~{{ansible_user}}/'
-     mode: 0760
+     mode: push
 
   - name: Changing the script so it was able to read local tfstate file
     lineinfile:
