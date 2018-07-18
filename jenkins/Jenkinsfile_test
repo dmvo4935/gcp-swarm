@@ -11,12 +11,14 @@ pipeline {
 
 	stages {
 
-		stage('Terraform: deployment') {
+		stage('Test') {
 
 			steps {
-                            sh 'terraform -version'
-                            sh 'ansible --version'
-                         }
+                        script {
+                             def tf_ver="ls /bin".execute().text
+                             println tf_ver  
+                         }   
+                      }
                 }
        }
  }
