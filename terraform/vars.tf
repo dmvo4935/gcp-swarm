@@ -17,3 +17,7 @@ variable "private_key_path" {
 variable "management_user" {
   default = "et4935"
 }
+
+variable "branch" {
+  default = "master"
+}

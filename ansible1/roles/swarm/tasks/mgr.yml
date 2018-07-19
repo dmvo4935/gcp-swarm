@@ -4,6 +4,14 @@
         --advertise-addr {{ swarm_manager_address }}
   when: "docker_info.stdout.find('Swarm: active') == -1"
 
+- name: Install python modules needed by helper service
+  pip: 
+    name: '{{item}}'
+    state: latest
+  with_items:
+   - pip
+   - bottle    
+
 - name: Install swarm helper service
   block: 
   - name: Copy swarm-helper service unit

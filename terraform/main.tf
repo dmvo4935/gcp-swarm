@@ -244,6 +244,7 @@ data "template_file" "worker_init" {
 
   vars {
     master_address = "${google_compute_instance.master-instance.network_interface.0.address}"
+    branch         = "${var.branch}"
   }
 }
 
