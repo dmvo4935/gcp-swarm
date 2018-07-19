@@ -18,7 +18,7 @@ pipeline {
                        ansiColor('xterm') {
                          dir("${WORKSPACE}/terraform"){
                            sh 'terraform init'
-                           sh 'terraform apply --auto-approve'
+                           sh "terraform apply --auto-approve -var branch=${BUILD_BRANCH}"
                            sh "terraform state pull > ${WORKSPACE}/ansible1/terraform.tfstate"
                            sh 'chmod go=--- id_rsa'  
                            } 
