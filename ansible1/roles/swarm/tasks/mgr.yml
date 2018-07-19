@@ -22,9 +22,10 @@
     copy:
      src: swarm-helper.py
      dest: /root/
+     mode: 0550
   - name: Enable swarm-helper service
     service: 
      name: swarm-helper
-     state: started
+     state: running
      enabled: true   
 
