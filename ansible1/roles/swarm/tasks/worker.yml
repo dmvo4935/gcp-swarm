@@ -8,7 +8,8 @@
   wait_for:
     host: "{{ swarm_manager_address }}"
     port: "{{ swarm_manager_port }}"
-    timeout: 300
+    delay: 60
+    timeout: 600
 
 #- name: Get the worker join-token.
 #  shell: docker swarm join-token -q worker
