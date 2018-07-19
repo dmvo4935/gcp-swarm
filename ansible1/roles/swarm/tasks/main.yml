@@ -1,0 +1,11 @@
+- name: force docker handlers
+  meta: flush_handlers
+
+- name: Check docker info
+  shell: docker info
+  changed_when: False
+  register: docker_info
+
+- name: Include "{{swarm_type_of_node}}" recipe
+  include: "{{swarm_type_of_node}}.yml"
+

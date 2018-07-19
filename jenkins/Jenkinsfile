@@ -16,31 +16,34 @@ pipeline {
 			steps {
                          sh 'echo efe7656e-5c56-bf4f-9bd9-8910d6511b71 >/home/jenkins/.vault-token'
                        ansiColor('xterm') {
-                         dir('terraform'){
+                         dir("${WORKSPACE}/terraform"){
                            sh 'terraform init'
-                           sh 'terraform apply --auto-approve'
-                          } 
+                           sh "terraform apply --auto-approve -var branch=${BUILD_BRANCH}"
+                           sh "terraform state pull > ${WORKSPACE}/ansible1/terraform.tfstate"
+                           sh 'chmod go=--- id_rsa'  
+                           } 
                          }          
-		}
+		    }
 		}
 
 		stage('Ansible: configure management node') {
 			steps {
-                      dir('ansible'){
-                      sh 'ansible-playbook -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible.yml' 
-                    }
+                      dir("${WORKSPACE}/ansible1"){
+                       sh "ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no' -i ./terraform_inventory.sh --private-key ../terraform/id_rsa install_ansible.yml" 
+                     }
                    }
 		}
 
 		stage('Ansible: configure swarm master') {
 			steps {
-                         dir ('terraform'){
-                          script {
-                           def user = "terraform output | grep user | sed 's/^.*= //'".execute().text
-                           def host = "terraform output | grep node | sed 's/^.*= //'".execute().text
-                           }
-                         
-                         sh 'ssh -i id_rsa ${user}@${host} ansible-playbook -i ./terraform_inventory.sh main.yml'
+                         dir ("${WORKSPACE}/terraform"){
+                            script {
+                           def user = sh returnStdout: true, script: "terraform output | grep user | sed 's/^.*= //' | tr -d '\n'"
+                           def host = sh returnStdout: true, script: "terraform output | grep node | sed 's/^.*= //' | tr -d '\n'"
+                        //   println user
+                        //   println host 
+                            sh 'ssh -i id_rsa '+ user +'@'+ host +' "ansible-playbook --ssh-common-args=\'-o StrictHostKeyChecking=no\' -i ./terraform_inventory.sh main.yml"'
+                          }
                          } 
 			}
 		}

@@ -1,0 +1,1 @@
+ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -q -i ../id_rsa '{{ansible_user}}'@'{{hostvars[management_node][0][ansible_ssh_host]}}'"'

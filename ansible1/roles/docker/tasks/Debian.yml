@@ -1,0 +1,50 @@
+- name: Get Kernel release
+  command: uname -r
+  register: KERNEL_RELEASE
+  changed_when: false
+
+- name: Install dependencies in Deb systems
+  apt: name={{ item }} update_cache=yes cache_valid_time=3600 state=present
+  with_items:
+      - python-dev
+      - python-setuptools
+      - curl
+      - python-pip
+      - apt-transport-https
+      - ca-certificates
+      - curl
+
+- name: Apt upgrade the kernel and install additional packages
+  apt: name=linux-image-generic-lts-trusty update_cache=yes cache_valid_time=3600
+  when: KERNEL_RELEASE.stdout | version_compare('3.13.0', '<=')
+
+- name: restart the machine if kernel was upgraded
+  command: shutdown -r now "Ansible updates triggered"
+  async: 0
+  poll: 0
+  ignore_errors: true
+  when: KERNEL_RELEASE.stdout | version_compare('3.13.0', '<=')
+
+- name: waiting for machine to come back
+  local_action: wait_for host={{IM_NODE_NET_0_IP}} state=started
+  become: false
+  when: KERNEL_RELEASE.stdout | version_compare('3.13.0', '<=')
+
+- name: Add Docker repo key
+  apt_key: url="https://download.docker.com/linux/debian/gpg"
+  ignore_errors: yes
+  register: add_docker_repo
+
+- name: Add Docker repo key (python 2.7.9 or older)
+  shell: curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -qq - >/dev/null
+  when: add_docker_repo is failed
+
+- name: Add docker-ce  repo
+  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} {{ docker_channel }}'
+
+- name: Install docker
+  apt: name=docker-ce update_cache=yes
+
+- name: Install CRIU
+  apt: name=criu update_cache=yes state=present
+  when: ansible_distribution_major_version == "16"
