@@ -1,3 +1,4 @@
 *.retry
 . terraform
 .terraform/*
+*.tfstate
